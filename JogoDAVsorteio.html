@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detetive, Assassino e Vítima</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 20px; background: #1a1a1a; color: #fff; }
+    textarea { width: 90%; height: 80px; margin: 10px 0; border-radius: 8px; padding: 8px; font-size: 16px; }
+    button { padding: 12px 24px; font-size: 16px; border-radius: 8px; border: none; cursor: pointer; background: #e63946; color: #fff; font-weight: bold; margin: 5px; }
+    .card { background: #2a2a2a; border-radius: 12px; padding: 25px; margin-top: 20px; display: none; }
+    .role { font-size: 24px; font-weight: bold; margin: 15px 0; }
+  </style>
+</head>
+<body>
+
+  <h2>Sorteio: Detetive</h2>
+
+  <div id="setup">
+    <p>Insira os nomes separados por vírgula (mínimo 3):</p>
+    <textarea id="nomes">Ana, Bruno, Carlos, Daniela, Eduardo</textarea><br>
+    <button onclick="iniciarJogo()">Sortear Papéis</button>
+  </div>
+
+  <div id="jogo" class="card">
+    <h3 id="instrucao"></h3>
+    <button id="btnAcao" onclick="acaoJogador()">Ver Meu Papel</button>
+    <div id="revelacao" class="role" style="display:none;"></div>
+  </div>
+
+  <script>
+    let jogadores = [];
+    let papeis = [];
+    let indiceAtual = 0;
+    let visualizando = false;
+
+    function iniciarJogo() {
+      const entrada = document.getElementById("nomes").value;
+      jogadores = entrada.split(",").map(n => n.trim()).filter(n => n.length > 0);
+
+      if (jogadores.length < 3) {
+        alert("Digite ao menos 3 jogadores!");
+        return;
+      }
+
+      // 1 Assassino, 1 Detetive e o restante Vítimas
+      papeis = ["Assassino 🔪", "Detetive 🔍"];
+      for (let i = 2; i < jogadores.length; i++) {
+        papeis.push("Vítima 👤");
+      }
+
+      // Embaralha os papéis aleatoriamente
+      papeis.sort(() => Math.random() - 0.5);
+
+      document.getElementById("setup").style.display = "none";
+      document.getElementById("jogo").style.display = "block";
+      indiceAtual = 0;
+      visualizando = false;
+      atualizarTela();
+    }
+
+    function atualizarTela() {
+      const nomeAtual = jogadores[indiceAtual];
+      document.getElementById("instrucao").innerText = `Entregue o aparelho para: ${nomeAtual}`;
+      document.getElementById("btnAcao").innerText = "Ver Meu Papel";
+      document.getElementById("revelacao").style.display = "none";
+      visualizando = false;
+    }
+
+    function acaoJogador() {
+      const revelacao = document.getElementById("revelacao");
+      const btn = document.getElementById("btnAcao");
+
+      if (!visualizando) {
+        revelacao.innerText = papeis[indiceAtual];
+        revelacao.style.display = "block";
+        btn.innerText = "Esconder e Passar para o Próximo";
+        visualizando = true;
+      } else {
+        indiceAtual++;
+        if (indiceAtual < jogadores.length) {
+          atualizarTela();
+        } else {
+          document.getElementById("instrucao").innerText = "Todos já viram seus papéis! O jogo começou.";
+          revelacao.style.display = "none";
+          btn.style.display = "none";
+        }
+      }
+    }
+  </script>
+</body>
+</html>
